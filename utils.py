@@ -3,6 +3,8 @@ import psycopg2.extras
 import networkx as nx
 import random
 from itertools import combinations
+from datetime import date
+from decimal import *
 
 def get_tables(connection):
     """
@@ -25,6 +27,19 @@ def get_tables(connection):
     cursor.close()
 
     return tables
+
+def get_col_values (connection,col_name,table_name) :
+    """
+    Gets values of a clomun, goven table and column name
+    """
+    cursor = connection.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor.execute("""SELECT %s
+                      FROM %s
+                      """ % (col_name,table_name))
+    vals = cursor.fetchall()
+    cursor.close()
+    ret_vals = [val[col_name] for val in vals]
+    return ret_vals
 
 def get_table_dict(connection, tables):
     """
@@ -134,6 +149,8 @@ def get_join_graph(foreign_key_dict):
             G.add_node(col_name)
             G.add_node(foreign_col_name)
             G.add_edge(col_name, foreign_col_name)
+    G.remove_edge('lineitem.l_partkey','partsupp.ps_suppkey')
+    G.remove_edge('lineitem.l_suppkey','partsupp.ps_partkey')
     return G
 
 def get_all_simple_paths(G) :
@@ -185,7 +202,7 @@ def get_columns_from_tables (tables, table_dict) :
     return cols
 
 def enclose_with_quotes(string) : 
-    return "\'" + string + "\'"
+    return "\"" + str(string) + "\""
 
 def get_comma_separated (cols) :
     string = ""
@@ -209,5 +226,61 @@ def get_all_combinations(l) :
     for r in range(1,len(l)+1) : 
         ret += combinations(l,r)
     return ret
+
+def get_num_rows(conn,table) :
+    cursor = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    cursor.execute("""SELECT count(*) FROM %s"""%table)
+    res = cursor.fetchall()
+    cursor.close()
+    return res[0]['count']
+
+def get_min_rows(conn,tables) :
+    rows = [get_num_rows(conn,table) for table in tables.keys()]
+    return min(rows)
+
+
+def get_agg_filters_for_col(conn,col,table_dict) :
+    table_name = col.split('.')[0]
+    col_name = col.split('.')[1]
+    col_vals = get_col_values(conn,col_name,table_name)
+    is_nullable = table_dict[table_name][col_name]['is_nullable']
+    aggregation_list = []
+    filters_list = []
+
+    aggregation_list.append("MAX(%s)"%col)
+    aggregation_list.append("MIN(%s)"%col)
+    aggregation_list.append("COUNT(%s)"%col)
+
+    if(is_nullable == 'YES') : 
+        filters_list.append("%s IS NOT NULL"%col)
+        filters_list.append("%s IS NULL"%col)
+
+    col_type = type(col_vals[0])
+    if(col_type==int) :
+        filters_list.append("%s = %d"%(col,random.choice(col_vals)))
+        filters_list.append("%s >= %d"%(col,random.choice(col_vals)))
+        filters_list.append("%s <= %d"%(col,random.choice(col_vals)))
+        filters_list.append("%s > %d"%(col,random.choice(col_vals)))
+        filters_list.append("%s < %d"%(col,random.choice(col_vals)))
+
+    elif(col_type==Decimal) :
+        filters_list.append("%s = %lf"%(col,random.choice(col_vals)))
+        filters_list.append("%s >= %lf"%(col,random.choice(col_vals)))
+        filters_list.append("%s <= %lf"%(col,random.choice(col_vals)))
+        filters_list.append("%s > %lf"%(col,random.choice(col_vals)))
+        filters_list.append("%s < %lf"%(col,random.choice(col_vals)))
+    elif(col_type==str) :
+        filters_list.append("%s = '%s'"%(col,random.choice(col_vals)))
+        filters_list.append("%s LIKE '%s'"%(col,random.choice(col_vals)[0]))
+    elif(col_type==date) :
+        filters_list.append("%s = %s"%(col,random.choice(col_vals)))
+    
+    if(col_type == int or col_type==Decimal) :
+        aggregation_list.append("AVG(%s)"%col)
+        aggregation_list.append("SUM(%s)"%col)
+    return aggregation_list , filters_list
+
+
+
 
         
