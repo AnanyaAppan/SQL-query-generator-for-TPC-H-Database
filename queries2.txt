@@ -1,0 +1,500 @@
+SELECT customer.c_comment,orders.o_shippriority,part.p_container,supplier.s_address,lineitem.l_returnflag,orders.tid 
+FROM customer,orders,lineitem,part,partsupp,supplier 
+WHERE customer.c_custkey = orders.o_custkey AND orders.o_orderkey = lineitem.l_orderkey AND lineitem.l_partkey = part.p_partkey AND part.p_partkey = partsupp.ps_partkey AND supplier.s_suppkey = partsupp.ps_suppkey 
+GROUP BY orders.o_custkey,orders.o_totalprice,customer.c_comment,orders.o_shippriority,part.p_container,supplier.s_address,lineitem.l_returnflag,orders.tid 
+ORDER BY customer.c_comment,part.p_container,supplier.s_address,lineitem.l_returnflag 
+LIMIT 4
+
+SELECT lineitem.l_comment,supplier.s_comment,customer.tid,nation.n_name 
+FROM partsupp,lineitem,supplier,nation,customer 
+WHERE partsupp.ps_partkey = lineitem.l_partkey AND lineitem.l_suppkey = supplier.s_suppkey AND nation.n_nationkey = supplier.s_nationkey AND nation.n_nationkey = customer.c_nationkey 
+GROUP BY customer.c_acctbal,lineitem.l_quantity,lineitem.l_orderkey,lineitem.l_comment,supplier.s_comment,customer.tid,nation.n_name    
+
+
+SELECT supplier.s_address,orders.tid,lineitem.l_returnflag,lineitem.l_commitdate 
+FROM lineitem,supplier,customer,orders 
+WHERE lineitem.l_suppkey = supplier.s_suppkey AND customer.c_nationkey = supplier.s_nationkey AND customer.c_custkey = orders.o_custkey AND orders.tid < 2 
+GROUP BY supplier.s_address,orders.tid,lineitem.l_returnflag,lineitem.l_commitdate 
+ORDER BY supplier.s_address,lineitem.l_commitdate 
+LIMIT 5
+
+SELECT part.p_size,part.tid 
+FROM part,lineitem 
+WHERE lineitem.l_partkey = part.p_partkey 
+GROUP BY part.p_name,lineitem.l_linenumber,part.p_size,part.tid 
+ORDER BY part.p_size,part.tid  
+
+
+SELECT COUNT(supplier.s_address) , supplier.s_acctbal,supplier.s_name,supplier.s_address,nation.tid,nation.n_name 
+FROM nation,supplier 
+WHERE nation.n_nationkey = supplier.s_nationkey 
+GROUP BY supplier.s_nationkey,supplier.s_suppkey,nation.n_nationkey,supplier.s_acctbal,supplier.s_name,supplier.s_address,nation.tid,nation.n_name 
+ORDER BY supplier.s_address,nation.n_name 
+LIMIT 4
+
+SELECT nation.n_name 
+FROM nation,supplier,partsupp,lineitem 
+WHERE nation.n_nationkey = supplier.s_nationkey AND supplier.s_suppkey = partsupp.ps_suppkey AND partsupp.ps_partkey = lineitem.l_partkey AND nation.n_name = 'EGYPT                    ' 
+GROUP BY nation.n_name 
+ORDER BY nation.n_name  
+
+
+SELECT supplier.s_phone,supplier.s_address,customer.c_comment 
+FROM customer,supplier,nation 
+WHERE customer.c_nationkey = supplier.s_nationkey AND nation.n_nationkey = supplier.s_nationkey AND customer.c_comment = ' requests. final, regular ideas sleep final accou' 
+GROUP BY customer.c_mktsegment,supplier.s_phone,supplier.s_address,customer.c_comment 
+ORDER BY supplier.s_phone,supplier.s_address,customer.c_comment 
+LIMIT 3
+
+SELECT part.p_comment,orders.o_orderstatus,nation.tid,nation.n_name 
+FROM part,lineitem,partsupp,supplier,nation,customer,orders 
+WHERE lineitem.l_partkey = part.p_partkey AND partsupp.ps_suppkey = lineitem.l_suppkey AND supplier.s_suppkey = partsupp.ps_suppkey AND nation.n_nationkey = supplier.s_nationkey AND nation.n_nationkey = customer.c_nationkey AND customer.c_custkey = orders.o_custkey AND nation.n_name = 'CANADA                   ' AND nation.n_name = 'CANADA                   ' 
+GROUP BY part.p_comment,orders.o_orderstatus,nation.tid,nation.n_name 
+ORDER BY nation.tid 
+LIMIT 4
+
+SELECT supplier.s_phone,partsupp.ps_availqty 
+FROM orders,customer,nation,supplier,lineitem,partsupp,part 
+WHERE customer.c_custkey = orders.o_custkey AND nation.n_nationkey = customer.c_nationkey AND nation.n_nationkey = supplier.s_nationkey AND lineitem.l_suppkey = supplier.s_suppkey AND partsupp.ps_suppkey = lineitem.l_suppkey AND part.p_partkey = partsupp.ps_partkey 
+GROUP BY supplier.s_acctbal,part.p_comment,partsupp.ps_comment,supplier.s_phone,partsupp.ps_availqty    
+
+
+SELECT orders.o_comment,customer.c_phone,customer.c_acctbal,customer.c_address,lineitem.l_receiptdate 
+FROM customer,orders,lineitem,supplier,nation,region 
+WHERE customer.c_custkey = orders.o_custkey AND orders.o_orderkey = lineitem.l_orderkey AND lineitem.l_suppkey = supplier.s_suppkey AND nation.n_nationkey = supplier.s_nationkey AND region.r_regionkey = nation.n_regionkey 
+GROUP BY lineitem.l_shipmode,orders.o_comment,customer.c_phone,customer.c_acctbal,customer.c_address,lineitem.l_receiptdate   
+LIMIT 3
+
+SELECT orders.o_clerk 
+FROM orders,customer,supplier,lineitem,partsupp 
+WHERE customer.c_custkey = orders.o_custkey AND customer.c_nationkey = supplier.s_nationkey AND lineitem.l_suppkey = supplier.s_suppkey AND partsupp.ps_partkey = lineitem.l_partkey AND orders.o_clerk = 'Clerk#000000880' 
+GROUP BY customer.c_mktsegment,orders.o_totalprice,orders.o_clerk 
+ORDER BY orders.o_clerk  
+
+
+SELECT partsupp.ps_comment,part.p_comment,part.p_container 
+FROM part,partsupp,supplier 
+WHERE part.p_partkey = partsupp.ps_partkey AND supplier.s_suppkey = partsupp.ps_suppkey 
+GROUP BY part.p_name,supplier.s_suppkey,partsupp.ps_supplycost,partsupp.ps_comment,part.p_comment,part.p_container 
+ORDER BY partsupp.ps_comment,part.p_container 
+LIMIT 4
+
+SELECT MAX(partsupp.ps_availqty) , lineitem.l_shipdate,lineitem.l_commitdate,partsupp.ps_availqty 
+FROM part,partsupp,lineitem,supplier,nation 
+WHERE part.p_partkey = partsupp.ps_partkey AND partsupp.ps_suppkey = lineitem.l_suppkey AND lineitem.l_suppkey = supplier.s_suppkey AND nation.n_nationkey = supplier.s_nationkey 
+GROUP BY lineitem.l_shipdate,lineitem.l_commitdate,partsupp.ps_availqty 
+ORDER BY lineitem.l_shipdate,lineitem.l_commitdate 
+LIMIT 5
+
+SELECT partsupp.ps_supplycost,customer.c_mktsegment,part.tid,customer.tid,lineitem.tid 
+FROM customer,supplier,partsupp,part,lineitem 
+WHERE customer.c_nationkey = supplier.s_nationkey AND supplier.s_suppkey = partsupp.ps_suppkey AND part.p_partkey = partsupp.ps_partkey AND lineitem.l_partkey = part.p_partkey AND lineitem.tid = 1 
+GROUP BY lineitem.l_shipdate,partsupp.ps_supplycost,customer.c_mktsegment,part.tid,customer.tid,lineitem.tid    
+
+
+SELECT COUNT(customer.c_acctbal) , supplier.s_comment,customer.c_acctbal,supplier.s_name 
+FROM customer,supplier,partsupp 
+WHERE customer.c_nationkey = supplier.s_nationkey AND supplier.s_suppkey = partsupp.ps_suppkey 
+GROUP BY partsupp.ps_partkey,supplier.s_address,supplier.s_comment,customer.c_acctbal,supplier.s_name   
+LIMIT 3
+
+SELECT MAX(lineitem.l_commitdate) , lineitem.l_commitdate 
+FROM orders,customer,supplier,partsupp,lineitem,part 
+WHERE customer.c_custkey = orders.o_custkey AND customer.c_nationkey = supplier.s_nationkey AND supplier.s_suppkey = partsupp.ps_suppkey AND partsupp.ps_suppkey = lineitem.l_suppkey AND lineitem.l_partkey = part.p_partkey AND lineitem.l_commitdate = date '1996-02-12' AND lineitem.l_commitdate = date '1996-02-12' 
+GROUP BY lineitem.l_linestatus,partsupp.tid,orders.o_custkey,lineitem.l_commitdate   
+LIMIT 3
+
+SELECT COUNT(lineitem.l_quantity) , lineitem.l_returnflag,lineitem.l_quantity 
+FROM partsupp,part,lineitem,orders 
+WHERE part.p_partkey = partsupp.ps_partkey AND lineitem.l_partkey = part.p_partkey AND orders.o_orderkey = lineitem.l_orderkey AND lineitem.l_returnflag = 'N' 
+GROUP BY lineitem.tid,lineitem.l_shipinstruct,orders.o_shippriority,lineitem.l_returnflag,lineitem.l_quantity 
+ORDER BY lineitem.l_quantity  
+
+
+SELECT region.r_name,region.r_comment 
+FROM region 
+WHERE  region.r_name = 'MIDDLE EAST              ' AND region.r_comment = 'uickly special accounts cajole carefully blithely close requests. carefully final asymptotes haggle furiousl' 
+GROUP BY region.r_name,region.r_comment 
+ORDER BY region.r_comment 
+LIMIT 3
+
+SELECT supplier.s_name,customer.tid,customer.c_comment,supplier.s_acctbal 
+FROM supplier,customer 
+WHERE customer.c_nationkey = supplier.s_nationkey 
+GROUP BY supplier.s_name,customer.tid,customer.c_comment,supplier.s_acctbal 
+ORDER BY customer.tid,customer.c_comment,supplier.s_acctbal 
+LIMIT 5
+
+SELECT COUNT(lineitem.l_comment) , nation.n_name,lineitem.l_comment 
+FROM part,partsupp,lineitem,supplier,customer,nation 
+WHERE part.p_partkey = partsupp.ps_partkey AND partsupp.ps_suppkey = lineitem.l_suppkey AND lineitem.l_suppkey = supplier.s_suppkey AND customer.c_nationkey = supplier.s_nationkey AND nation.n_nationkey = customer.c_nationkey 
+GROUP BY nation.nation_fk1,part.p_mfgr,lineitem.l_extendedprice,nation.n_name,lineitem.l_comment 
+ORDER BY nation.n_name 
+LIMIT 3
+
+SELECT COUNT(supplier.s_phone) , supplier.s_phone 
+FROM supplier,partsupp 
+WHERE supplier.s_suppkey = partsupp.ps_suppkey AND supplier.s_phone = '15-679-861-2259' AND supplier.s_phone = '15-679-861-2259' 
+GROUP BY supplier.s_name,partsupp.ps_supplycost,supplier.s_phone 
+ORDER BY supplier.s_phone 
+LIMIT 3
+
+SELECT lineitem.l_shipinstruct 
+FROM region,nation,supplier,lineitem,partsupp,part 
+WHERE region.r_regionkey = nation.n_regionkey AND nation.n_nationkey = supplier.s_nationkey AND lineitem.l_suppkey = supplier.s_suppkey AND partsupp.ps_partkey = lineitem.l_partkey AND part.p_partkey = partsupp.ps_partkey 
+GROUP BY lineitem.l_shipinstruct 
+ORDER BY lineitem.l_shipinstruct 
+LIMIT 3
+
+SELECT MAX(nation.n_comment) , part.p_brand,orders.o_clerk,lineitem.l_shipdate,nation.n_comment,part.p_name 
+FROM supplier,nation,customer,orders,lineitem,partsupp,part 
+WHERE nation.n_nationkey = supplier.s_nationkey AND nation.n_nationkey = customer.c_nationkey AND customer.c_custkey = orders.o_custkey AND orders.o_orderkey = lineitem.l_orderkey AND partsupp.ps_partkey = lineitem.l_partkey AND part.p_partkey = partsupp.ps_partkey 
+GROUP BY customer.c_acctbal,lineitem.l_partkey,part.p_brand,orders.o_clerk,lineitem.l_shipdate,nation.n_comment,part.p_name 
+ORDER BY lineitem.l_shipdate,nation.n_comment,part.p_name 
+LIMIT 3
+
+SELECT COUNT(customer.c_name) , customer.c_name 
+FROM part,lineitem,orders,customer,supplier,nation 
+WHERE lineitem.l_partkey = part.p_partkey AND orders.o_orderkey = lineitem.l_orderkey AND customer.c_custkey = orders.o_custkey AND customer.c_nationkey = supplier.s_nationkey AND nation.n_nationkey = supplier.s_nationkey 
+GROUP BY orders.o_orderdate,supplier.s_name,lineitem.l_discount,customer.c_name    
+
+
+SELECT MIN(part.p_type) , part.p_type 
+FROM supplier,customer,orders,lineitem,part 
+WHERE customer.c_nationkey = supplier.s_nationkey AND customer.c_custkey = orders.o_custkey AND orders.o_orderkey = lineitem.l_orderkey AND lineitem.l_partkey = part.p_partkey 
+GROUP BY supplier.s_suppkey,lineitem.l_receiptdate,part.p_type 
+ORDER BY part.p_type  
+
+
+SELECT COUNT(nation.n_name) , nation.n_name,customer.c_comment,lineitem.l_tax,partsupp.ps_supplycost,nation.n_comment 
+FROM region,nation,customer,supplier,partsupp,lineitem,part 
+WHERE region.r_regionkey = nation.n_regionkey AND nation.n_nationkey = customer.c_nationkey AND customer.c_nationkey = supplier.s_nationkey AND supplier.s_suppkey = partsupp.ps_suppkey AND partsupp.ps_suppkey = lineitem.l_suppkey AND lineitem.l_partkey = part.p_partkey 
+GROUP BY nation.n_name,customer.c_comment,lineitem.l_tax,partsupp.ps_supplycost,nation.n_comment 
+ORDER BY nation.n_name,lineitem.l_tax 
+LIMIT 4
+
+SELECT lineitem.l_shipdate 
+FROM partsupp,lineitem,orders 
+WHERE partsupp.ps_suppkey = lineitem.l_suppkey AND orders.o_orderkey = lineitem.l_orderkey AND lineitem.l_shipdate = date '1996-04-21' 
+GROUP BY orders.o_orderdate,partsupp.ps_comment,lineitem.l_shipdate 
+ORDER BY lineitem.l_shipdate  
+
+
+SELECT MAX(nation.n_comment) , customer.c_address,nation.n_comment,part.tid,part.p_name 
+FROM part,lineitem,orders,customer,supplier,nation 
+WHERE lineitem.l_partkey = part.p_partkey AND orders.o_orderkey = lineitem.l_orderkey AND customer.c_custkey = orders.o_custkey AND customer.c_nationkey = supplier.s_nationkey AND nation.n_nationkey = supplier.s_nationkey AND nation.n_comment IS NOT NULL AND nation.n_comment IS NOT NULL 
+GROUP BY customer.c_address,nation.n_comment,part.tid,part.p_name   
+LIMIT 3
+
+SELECT MAX(orders.o_comment) , lineitem.l_quantity,customer.c_acctbal,lineitem.l_shipdate,orders.o_clerk,orders.o_comment 
+FROM supplier,lineitem,orders,customer 
+WHERE lineitem.l_suppkey = supplier.s_suppkey AND orders.o_orderkey = lineitem.l_orderkey AND customer.c_custkey = orders.o_custkey AND lineitem.l_shipdate = date '1996-03-30' 
+GROUP BY lineitem.l_quantity,customer.c_acctbal,lineitem.l_shipdate,orders.o_clerk,orders.o_comment    
+
+
+SELECT region.r_name,customer.c_acctbal 
+FROM customer,orders,lineitem,supplier,nation,region 
+WHERE customer.c_custkey = orders.o_custkey AND orders.o_orderkey = lineitem.l_orderkey AND lineitem.l_suppkey = supplier.s_suppkey AND nation.n_nationkey = supplier.s_nationkey AND region.r_regionkey = nation.n_regionkey AND region.r_name = 'MIDDLE EAST              ' AND region.r_name = 'MIDDLE EAST              ' AND region.r_name = 'MIDDLE EAST              ' 
+GROUP BY lineitem.l_shipmode,region.r_name,customer.c_acctbal 
+ORDER BY customer.c_acctbal 
+LIMIT 3
+
+SELECT MIN(customer.c_comment) , lineitem.l_shipmode,lineitem.l_linenumber,orders.o_comment,supplier.s_acctbal,customer.c_comment 
+FROM supplier,lineitem,orders,customer,nation 
+WHERE lineitem.l_suppkey = supplier.s_suppkey AND orders.o_orderkey = lineitem.l_orderkey AND customer.c_custkey = orders.o_custkey AND nation.n_nationkey = customer.c_nationkey AND lineitem.l_linenumber > 4 
+GROUP BY lineitem.l_returnflag,nation.n_comment,orders.o_orderpriority,lineitem.l_shipmode,lineitem.l_linenumber,orders.o_comment,supplier.s_acctbal,customer.c_comment 
+ORDER BY lineitem.l_shipmode,lineitem.l_linenumber,orders.o_comment,supplier.s_acctbal,customer.c_comment 
+LIMIT 5
+
+SELECT MIN(lineitem.l_linestatus) , lineitem.l_linestatus,orders.o_clerk,customer.c_phone 
+FROM supplier,customer,orders,lineitem,partsupp 
+WHERE customer.c_nationkey = supplier.s_nationkey AND customer.c_custkey = orders.o_custkey AND orders.o_orderkey = lineitem.l_orderkey AND partsupp.ps_partkey = lineitem.l_partkey AND lineitem.l_linestatus = 'O' 
+GROUP BY customer.tid,lineitem.l_extendedprice,supplier.s_phone,lineitem.l_linestatus,orders.o_clerk,customer.c_phone   
+LIMIT 3
+
+SELECT orders.o_orderstatus,orders.o_comment,orders.o_totalprice,orders.o_clerk 
+FROM orders 
+WHERE  orders.o_comment = ' foxes. pending accounts at the pending, silent asymptot' 
+GROUP BY orders.o_orderstatus,orders.o_comment,orders.o_totalprice,orders.o_clerk 
+ORDER BY orders.o_orderstatus,orders.o_totalprice,orders.o_clerk  
+
+
+SELECT COUNT(lineitem.l_receiptdate) , supplier.s_name,supplier.s_address,lineitem.l_receiptdate 
+FROM supplier,lineitem,orders 
+WHERE lineitem.l_suppkey = supplier.s_suppkey AND orders.o_orderkey = lineitem.l_orderkey 
+GROUP BY supplier.s_name,supplier.s_address,lineitem.l_receiptdate   
+LIMIT 5
+
+SELECT customer.c_phone,nation.n_name,orders.o_clerk,region.r_comment 
+FROM orders,customer,nation,region 
+WHERE customer.c_custkey = orders.o_custkey AND nation.n_nationkey = customer.c_nationkey AND region.r_regionkey = nation.n_regionkey 
+GROUP BY customer.c_mktsegment,customer.c_phone,nation.n_name,orders.o_clerk,region.r_comment   
+LIMIT 3
+
+SELECT MAX(lineitem.tid) , nation.n_comment,lineitem.l_receiptdate,lineitem.tid 
+FROM orders,lineitem,supplier,nation,region 
+WHERE orders.o_orderkey = lineitem.l_orderkey AND lineitem.l_suppkey = supplier.s_suppkey AND nation.n_nationkey = supplier.s_nationkey AND region.r_regionkey = nation.n_regionkey AND lineitem.tid > 3 
+GROUP BY region.tid,nation.n_regionkey,nation.n_comment,lineitem.l_receiptdate,lineitem.tid    
+
+
+SELECT lineitem.l_linenumber 
+FROM region,nation,customer,supplier,partsupp,lineitem,orders 
+WHERE region.r_regionkey = nation.n_regionkey AND nation.n_nationkey = customer.c_nationkey AND customer.c_nationkey = supplier.s_nationkey AND supplier.s_suppkey = partsupp.ps_suppkey AND partsupp.ps_suppkey = lineitem.l_suppkey AND orders.o_orderkey = lineitem.l_orderkey AND lineitem.l_linenumber > 4 
+GROUP BY lineitem.l_linenumber 
+ORDER BY lineitem.l_linenumber 
+LIMIT 4
+
+SELECT MIN(supplier.s_acctbal) , part.p_comment,supplier.s_acctbal 
+FROM region,nation,supplier,partsupp,part 
+WHERE region.r_regionkey = nation.n_regionkey AND nation.n_nationkey = supplier.s_nationkey AND supplier.s_suppkey = partsupp.ps_suppkey AND part.p_partkey = partsupp.ps_partkey 
+GROUP BY partsupp.ps_partkey,part.tid,partsupp.ps_availqty,part.p_comment,supplier.s_acctbal   
+LIMIT 3
+
+SELECT SUM(partsupp.ps_supplycost) , partsupp.tid,nation.tid,lineitem.l_linenumber,lineitem.l_returnflag,partsupp.ps_supplycost 
+FROM nation,customer,orders,lineitem,partsupp 
+WHERE nation.n_nationkey = customer.c_nationkey AND customer.c_custkey = orders.o_custkey AND orders.o_orderkey = lineitem.l_orderkey AND partsupp.ps_suppkey = lineitem.l_suppkey AND lineitem.l_linenumber <= 5 
+GROUP BY partsupp.tid,nation.tid,lineitem.l_linenumber,lineitem.l_returnflag,partsupp.ps_supplycost 
+ORDER BY nation.tid,lineitem.l_linenumber  
+
+
+SELECT MAX(orders.tid) , orders.tid,customer.c_acctbal,supplier.tid,orders.o_shippriority,lineitem.l_commitdate 
+FROM lineitem,orders,customer,supplier 
+WHERE orders.o_orderkey = lineitem.l_orderkey AND customer.c_custkey = orders.o_custkey AND customer.c_nationkey = supplier.s_nationkey 
+GROUP BY lineitem.l_comment,orders.tid,customer.c_acctbal,supplier.tid,orders.o_shippriority,lineitem.l_commitdate 
+ORDER BY orders.o_shippriority 
+LIMIT 3
+
+SELECT lineitem.l_linenumber 
+FROM customer,orders,lineitem,supplier,partsupp,part 
+WHERE customer.c_custkey = orders.o_custkey AND orders.o_orderkey = lineitem.l_orderkey AND lineitem.l_suppkey = supplier.s_suppkey AND supplier.s_suppkey = partsupp.ps_suppkey AND part.p_partkey = partsupp.ps_partkey 
+GROUP BY customer.c_nationkey,supplier.s_suppkey,lineitem.l_linenumber 
+ORDER BY lineitem.l_linenumber 
+LIMIT 5
+
+SELECT MIN(supplier.s_address) , supplier.s_address 
+FROM supplier,partsupp 
+WHERE supplier.s_suppkey = partsupp.ps_suppkey AND supplier.s_address = 'Bk7ah4CK8SYQTepEmvMkkgMwg' 
+GROUP BY supplier.s_phone,supplier.s_address 
+ORDER BY supplier.s_address  
+
+
+SELECT MAX(lineitem.l_commitdate) , partsupp.ps_availqty,lineitem.l_commitdate,supplier.s_comment 
+FROM nation,supplier,lineitem,partsupp 
+WHERE nation.n_nationkey = supplier.s_nationkey AND lineitem.l_suppkey = supplier.s_suppkey AND partsupp.ps_partkey = lineitem.l_partkey 
+GROUP BY lineitem.l_linenumber,lineitem.l_linestatus,lineitem.l_extendedprice,partsupp.ps_availqty,lineitem.l_commitdate,supplier.s_comment    
+
+
+SELECT orders.o_orderpriority,partsupp.ps_comment,part.p_comment,lineitem.l_returnflag 
+FROM customer,orders,lineitem,part,partsupp 
+WHERE customer.c_custkey = orders.o_custkey AND orders.o_orderkey = lineitem.l_orderkey AND lineitem.l_partkey = part.p_partkey AND part.p_partkey = partsupp.ps_partkey 
+GROUP BY part.p_partkey,orders.o_orderpriority,partsupp.ps_comment,part.p_comment,lineitem.l_returnflag 
+ORDER BY orders.o_orderpriority,partsupp.ps_comment,lineitem.l_returnflag 
+LIMIT 4
+
+SELECT MAX(supplier.s_phone) , supplier.s_comment,supplier.s_phone,lineitem.l_commitdate,lineitem.l_receiptdate 
+FROM supplier,partsupp,lineitem 
+WHERE supplier.s_suppkey = partsupp.ps_suppkey AND partsupp.ps_partkey = lineitem.l_partkey 
+GROUP BY supplier.tid,partsupp.tid,supplier.s_comment,supplier.s_phone,lineitem.l_commitdate,lineitem.l_receiptdate    
+
+
+SELECT lineitem.l_comment,lineitem.l_shipdate 
+FROM partsupp,lineitem,supplier,customer,nation 
+WHERE partsupp.ps_partkey = lineitem.l_partkey AND lineitem.l_suppkey = supplier.s_suppkey AND customer.c_nationkey = supplier.s_nationkey AND nation.n_nationkey = customer.c_nationkey AND lineitem.l_shipdate = date '1996-03-30' 
+GROUP BY customer.c_acctbal,customer.c_custkey,lineitem.l_comment,lineitem.l_shipdate 
+ORDER BY lineitem.l_comment,lineitem.l_shipdate 
+LIMIT 3
+
+SELECT lineitem.l_shipdate 
+FROM partsupp,lineitem,supplier,customer 
+WHERE partsupp.ps_suppkey = lineitem.l_suppkey AND lineitem.l_suppkey = supplier.s_suppkey AND customer.c_nationkey = supplier.s_nationkey 
+GROUP BY supplier.s_comment,customer.c_comment,lineitem.l_shipdate   
+LIMIT 5
+
+SELECT supplier.tid 
+FROM part,partsupp,lineitem,orders,customer,supplier,nation 
+WHERE part.p_partkey = partsupp.ps_partkey AND partsupp.ps_partkey = lineitem.l_partkey AND orders.o_orderkey = lineitem.l_orderkey AND customer.c_custkey = orders.o_custkey AND customer.c_nationkey = supplier.s_nationkey AND nation.n_nationkey = supplier.s_nationkey 
+GROUP BY supplier.tid   
+LIMIT 4
+
+SELECT MIN(nation.n_name) , nation.n_name 
+FROM nation,region 
+WHERE region.r_regionkey = nation.n_regionkey 
+GROUP BY nation.n_nationkey,region.tid,nation.n_name 
+ORDER BY nation.n_name  
+
+
+SELECT MIN(customer.c_mktsegment) , customer.c_phone,customer.c_mktsegment,customer.c_address,customer.c_name 
+FROM customer 
+WHERE  customer.c_address = 'KvpyuHCplrB84WgAiGV6sYpZq7Tj' AND customer.c_address = 'KvpyuHCplrB84WgAiGV6sYpZq7Tj' AND customer.c_name = 'Customer#000000005' 
+GROUP BY customer.c_acctbal,customer.c_phone,customer.c_mktsegment,customer.c_address,customer.c_name 
+ORDER BY customer.c_phone,customer.c_mktsegment,customer.c_address  
+
+
+SELECT lineitem.l_shipdate,supplier.s_acctbal 
+FROM lineitem,supplier,nation 
+WHERE lineitem.l_suppkey = supplier.s_suppkey AND nation.n_nationkey = supplier.s_nationkey AND lineitem.l_shipdate = date '1996-01-29' 
+GROUP BY nation.n_name,lineitem.l_commitdate,lineitem.l_shipdate,supplier.s_acctbal 
+ORDER BY lineitem.l_shipdate,supplier.s_acctbal 
+LIMIT 5
+
+SELECT SUM(region.tid) , supplier.s_name,nation.nation_fk1,region.tid,supplier.s_address 
+FROM partsupp,supplier,nation,region 
+WHERE supplier.s_suppkey = partsupp.ps_suppkey AND nation.n_nationkey = supplier.s_nationkey AND region.r_regionkey = nation.n_regionkey AND nation.nation_fk1 IS NOT NULL AND supplier.s_address = 'Bk7ah4CK8SYQTepEmvMkkgMwg' 
+GROUP BY supplier.s_suppkey,nation.n_comment,partsupp.ps_comment,supplier.s_name,nation.nation_fk1,region.tid,supplier.s_address   
+LIMIT 3
+
+SELECT AVG(customer.tid) , customer.tid,lineitem.l_extendedprice,supplier.s_comment 
+FROM part,lineitem,orders,customer,supplier,partsupp 
+WHERE lineitem.l_partkey = part.p_partkey AND orders.o_orderkey = lineitem.l_orderkey AND customer.c_custkey = orders.o_custkey AND customer.c_nationkey = supplier.s_nationkey AND supplier.s_suppkey = partsupp.ps_suppkey AND customer.tid >= 1 
+GROUP BY supplier.s_address,orders.o_orderpriority,customer.tid,lineitem.l_extendedprice,supplier.s_comment 
+ORDER BY customer.tid,lineitem.l_extendedprice 
+LIMIT 3
+
+SELECT customer.c_comment 
+FROM part,lineitem,partsupp,supplier,customer 
+WHERE lineitem.l_partkey = part.p_partkey AND partsupp.ps_partkey = lineitem.l_partkey AND supplier.s_suppkey = partsupp.ps_suppkey AND customer.c_nationkey = supplier.s_nationkey AND customer.c_comment = ' deposits eat slyly ironic, even instructions. express foxes detect slyly. blithely even accounts abov' 
+GROUP BY partsupp.ps_supplycost,customer.c_comment   
+LIMIT 5
+
+SELECT customer.c_mktsegment,orders.o_totalprice,supplier.s_address,customer.c_comment 
+FROM orders,customer,supplier,partsupp 
+WHERE customer.c_custkey = orders.o_custkey AND customer.c_nationkey = supplier.s_nationkey AND supplier.s_suppkey = partsupp.ps_suppkey AND customer.c_mktsegment = 'AUTOMOBILE' 
+GROUP BY orders.o_shippriority,orders.o_orderpriority,orders.o_custkey,customer.c_mktsegment,orders.o_totalprice,supplier.s_address,customer.c_comment   
+LIMIT 5
+
+SELECT COUNT(nation.n_name) , orders.o_shippriority,nation.n_name 
+FROM part,partsupp,lineitem,orders,customer,supplier,nation 
+WHERE part.p_partkey = partsupp.ps_partkey AND partsupp.ps_suppkey = lineitem.l_suppkey AND orders.o_orderkey = lineitem.l_orderkey AND customer.c_custkey = orders.o_custkey AND customer.c_nationkey = supplier.s_nationkey AND nation.n_nationkey = supplier.s_nationkey 
+GROUP BY part.p_comment,part.p_container,orders.o_shippriority,nation.n_name   
+LIMIT 5
+
+SELECT SUM(lineitem.l_linenumber) , lineitem.l_linenumber 
+FROM part,partsupp,lineitem,supplier,nation,region 
+WHERE part.p_partkey = partsupp.ps_partkey AND partsupp.ps_partkey = lineitem.l_partkey AND lineitem.l_suppkey = supplier.s_suppkey AND nation.n_nationkey = supplier.s_nationkey AND region.r_regionkey = nation.n_regionkey AND lineitem.l_linenumber <= 1 
+GROUP BY lineitem.l_commitdate,partsupp.ps_suppkey,lineitem.l_linenumber 
+ORDER BY lineitem.l_linenumber  
+
+
+SELECT MAX(orders.o_orderstatus) , customer.c_mktsegment,orders.o_orderstatus,orders.o_orderpriority 
+FROM supplier,nation,customer,orders,lineitem 
+WHERE nation.n_nationkey = supplier.s_nationkey AND nation.n_nationkey = customer.c_nationkey AND customer.c_custkey = orders.o_custkey AND orders.o_orderkey = lineitem.l_orderkey 
+GROUP BY customer.c_mktsegment,orders.o_orderstatus,orders.o_orderpriority   
+LIMIT 4
+
+SELECT MAX(lineitem.l_commitdate) , lineitem.l_commitdate 
+FROM partsupp,lineitem,part 
+WHERE partsupp.ps_suppkey = lineitem.l_suppkey AND lineitem.l_partkey = part.p_partkey 
+GROUP BY partsupp.tid,lineitem.l_receiptdate,lineitem.l_commitdate   
+LIMIT 5
+
+SELECT customer.c_comment 
+FROM customer,supplier,partsupp,part,lineitem,orders 
+WHERE customer.c_nationkey = supplier.s_nationkey AND supplier.s_suppkey = partsupp.ps_suppkey AND part.p_partkey = partsupp.ps_partkey AND lineitem.l_partkey = part.p_partkey AND orders.o_orderkey = lineitem.l_orderkey 
+GROUP BY customer.c_custkey,lineitem.l_tax,lineitem.l_quantity,customer.c_comment    
+
+
+SELECT AVG(supplier.tid) , nation.tid,customer.tid,lineitem.l_tax,supplier.tid 
+FROM part,lineitem,supplier,nation,customer 
+WHERE lineitem.l_partkey = part.p_partkey AND lineitem.l_suppkey = supplier.s_suppkey AND nation.n_nationkey = supplier.s_nationkey AND nation.n_nationkey = customer.c_nationkey AND nation.tid > 4 AND supplier.tid > 3 
+GROUP BY nation.tid,customer.tid,lineitem.l_tax,supplier.tid 
+ORDER BY nation.tid,lineitem.l_tax,supplier.tid 
+LIMIT 3
+
+SELECT AVG(lineitem.l_quantity) , part.p_mfgr,supplier.s_phone,lineitem.l_quantity,lineitem.tid,supplier.s_name 
+FROM part,partsupp,lineitem,supplier,customer 
+WHERE part.p_partkey = partsupp.ps_partkey AND partsupp.ps_partkey = lineitem.l_partkey AND lineitem.l_suppkey = supplier.s_suppkey AND customer.c_nationkey = supplier.s_nationkey 
+GROUP BY part.p_mfgr,supplier.s_phone,lineitem.l_quantity,lineitem.tid,supplier.s_name   
+LIMIT 3
+
+SELECT MAX(orders.o_orderdate) , supplier.s_address,orders.o_orderdate,part.p_mfgr,customer.c_acctbal 
+FROM partsupp,supplier,nation,customer,orders,lineitem,part 
+WHERE supplier.s_suppkey = partsupp.ps_suppkey AND nation.n_nationkey = supplier.s_nationkey AND nation.n_nationkey = customer.c_nationkey AND customer.c_custkey = orders.o_custkey AND orders.o_orderkey = lineitem.l_orderkey AND lineitem.l_partkey = part.p_partkey 
+GROUP BY customer.c_comment,partsupp.ps_suppkey,supplier.s_address,orders.o_orderdate,part.p_mfgr,customer.c_acctbal 
+ORDER BY supplier.s_address,part.p_mfgr 
+LIMIT 5
+
+SELECT part.tid,lineitem.l_linestatus,lineitem.l_receiptdate,lineitem.l_shipinstruct,lineitem.l_shipmode,supplier.s_address 
+FROM part,lineitem,partsupp,supplier,nation,region 
+WHERE lineitem.l_partkey = part.p_partkey AND partsupp.ps_partkey = lineitem.l_partkey AND supplier.s_suppkey = partsupp.ps_suppkey AND nation.n_nationkey = supplier.s_nationkey AND region.r_regionkey = nation.n_regionkey 
+GROUP BY partsupp.ps_partkey,supplier.tid,part.tid,lineitem.l_linestatus,lineitem.l_receiptdate,lineitem.l_shipinstruct,lineitem.l_shipmode,supplier.s_address   
+LIMIT 3
+
+SELECT MIN(lineitem.l_comment) , supplier.s_comment,lineitem.tid,part.tid,lineitem.l_comment 
+FROM part,partsupp,lineitem,orders,customer,supplier,nation,region 
+WHERE part.p_partkey = partsupp.ps_partkey AND partsupp.ps_suppkey = lineitem.l_suppkey AND orders.o_orderkey = lineitem.l_orderkey AND customer.c_custkey = orders.o_custkey AND customer.c_nationkey = supplier.s_nationkey AND nation.n_nationkey = supplier.s_nationkey AND region.r_regionkey = nation.n_regionkey 
+GROUP BY customer.c_address,lineitem.l_linenumber,part.p_container,supplier.s_comment,lineitem.tid,part.tid,lineitem.l_comment    
+
+
+SELECT part.p_retailprice,part.p_container 
+FROM nation,supplier,partsupp,part,lineitem 
+WHERE nation.n_nationkey = supplier.s_nationkey AND supplier.s_suppkey = partsupp.ps_suppkey AND part.p_partkey = partsupp.ps_partkey AND lineitem.l_partkey = part.p_partkey 
+GROUP BY part.p_retailprice,part.p_container 
+ORDER BY part.p_container  
+
+
+SELECT SUM(orders.tid) , orders.tid,nation.tid,customer.c_address 
+FROM orders,customer,nation,region 
+WHERE customer.c_custkey = orders.o_custkey AND nation.n_nationkey = customer.c_nationkey AND region.r_regionkey = nation.n_regionkey 
+GROUP BY customer.c_nationkey,orders.o_custkey,nation.n_nationkey,orders.tid,nation.tid,customer.c_address 
+ORDER BY nation.tid,customer.c_address 
+LIMIT 5
+
+SELECT MAX(lineitem.l_linenumber) , lineitem.l_linenumber,supplier.s_comment,partsupp.ps_availqty 
+FROM nation,supplier,lineitem,partsupp 
+WHERE nation.n_nationkey = supplier.s_nationkey AND lineitem.l_suppkey = supplier.s_suppkey AND partsupp.ps_partkey = lineitem.l_partkey 
+GROUP BY nation.n_comment,partsupp.ps_supplycost,lineitem.l_linenumber,supplier.s_comment,partsupp.ps_availqty    
+
+
+SELECT lineitem.l_returnflag,lineitem.l_shipinstruct,nation.tid,part.p_size 
+FROM region,nation,customer,orders,lineitem,partsupp,part 
+WHERE region.r_regionkey = nation.n_regionkey AND nation.n_nationkey = customer.c_nationkey AND customer.c_custkey = orders.o_custkey AND orders.o_orderkey = lineitem.l_orderkey AND partsupp.ps_partkey = lineitem.l_partkey AND part.p_partkey = partsupp.ps_partkey 
+GROUP BY part.p_partkey,orders.tid,lineitem.l_returnflag,lineitem.l_shipinstruct,nation.tid,part.p_size 
+ORDER BY lineitem.l_returnflag,lineitem.l_shipinstruct,nation.tid,part.p_size 
+LIMIT 5
+
+SELECT lineitem.l_returnflag,lineitem.l_commitdate,nation.n_comment 
+FROM supplier,partsupp,lineitem,orders,customer,nation 
+WHERE supplier.s_suppkey = partsupp.ps_suppkey AND partsupp.ps_suppkey = lineitem.l_suppkey AND orders.o_orderkey = lineitem.l_orderkey AND customer.c_custkey = orders.o_custkey AND nation.n_nationkey = customer.c_nationkey 
+GROUP BY lineitem.l_returnflag,lineitem.l_commitdate,nation.n_comment 
+ORDER BY nation.n_comment 
+LIMIT 4
+
+SELECT partsupp.ps_comment,supplier.s_address,nation.n_name 
+FROM partsupp,lineitem,supplier,nation 
+WHERE partsupp.ps_partkey = lineitem.l_partkey AND lineitem.l_suppkey = supplier.s_suppkey AND nation.n_nationkey = supplier.s_nationkey AND nation.n_name = 'ARGENTINA                ' 
+GROUP BY partsupp.ps_comment,supplier.s_address,nation.n_name    
+
+
+SELECT MAX(nation.tid) , nation.tid 
+FROM region,nation,supplier,partsupp,part,lineitem 
+WHERE region.r_regionkey = nation.n_regionkey AND nation.n_nationkey = supplier.s_nationkey AND supplier.s_suppkey = partsupp.ps_suppkey AND part.p_partkey = partsupp.ps_partkey AND lineitem.l_partkey = part.p_partkey 
+GROUP BY region.tid,part.tid,part.p_size,nation.tid   
+LIMIT 4
+
+SELECT supplier.s_name,customer.c_name,orders.o_orderstatus 
+FROM supplier,customer,orders 
+WHERE customer.c_nationkey = supplier.s_nationkey AND customer.c_custkey = orders.o_custkey AND customer.c_name = 'Customer#000000001' 
+GROUP BY orders.o_orderkey,supplier.s_name,customer.c_name,orders.o_orderstatus 
+ORDER BY customer.c_name 
+LIMIT 3
+
+SELECT lineitem.l_discount,supplier.s_address,partsupp.ps_supplycost,part.p_type 
+FROM customer,nation,supplier,partsupp,part,lineitem 
+WHERE nation.n_nationkey = customer.c_nationkey AND nation.n_nationkey = supplier.s_nationkey AND supplier.s_suppkey = partsupp.ps_suppkey AND part.p_partkey = partsupp.ps_partkey AND lineitem.l_partkey = part.p_partkey 
+GROUP BY lineitem.l_discount,supplier.s_address,partsupp.ps_supplycost,part.p_type    
+
+
+SELECT COUNT(supplier.s_acctbal) , lineitem.l_shipdate,part.p_type,lineitem.l_commitdate,supplier.s_acctbal 
+FROM supplier,lineitem,partsupp,part 
+WHERE lineitem.l_suppkey = supplier.s_suppkey AND partsupp.ps_suppkey = lineitem.l_suppkey AND part.p_partkey = partsupp.ps_partkey 
+GROUP BY part.p_partkey,lineitem.l_shipdate,part.p_type,lineitem.l_commitdate,supplier.s_acctbal 
+ORDER BY lineitem.l_shipdate,lineitem.l_commitdate,supplier.s_acctbal 
+LIMIT 5
+
+SELECT lineitem.l_returnflag,lineitem.l_linenumber,lineitem.tid 
+FROM region,nation,supplier,lineitem,orders,customer 
+WHERE region.r_regionkey = nation.n_regionkey AND nation.n_nationkey = supplier.s_nationkey AND lineitem.l_suppkey = supplier.s_suppkey AND orders.o_orderkey = lineitem.l_orderkey AND customer.c_custkey = orders.o_custkey 
+GROUP BY orders.o_orderdate,nation.tid,orders.o_custkey,lineitem.l_returnflag,lineitem.l_linenumber,lineitem.tid 
+ORDER BY lineitem.tid  
+
+

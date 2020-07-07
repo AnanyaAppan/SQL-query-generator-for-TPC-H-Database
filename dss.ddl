@@ -12,7 +12,7 @@ DROP TABLE LINEITEM ;
 CREATE TABLE NATION  ( N_NATIONKEY  INTEGER NOT NULL,
                             N_NAME       CHAR(25) NOT NULL,
                             N_REGIONKEY  INTEGER NOT NULL,
-                            N_COMMENT    VARCHAR(152), 
+                            N_COMMENT    VARCHAR(152) 
                         );
 
 CREATE TABLE REGION  ( R_REGIONKEY  INTEGER NOT NULL,
